@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+env-genai/
+
+# Environment variables & local secrets
+.env
+.env.*
+!.env.example
+*.json
+!package.json
+*.pem
+*.key
+
+# OS / Editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.log
+LINKEDIN_ARTICLE_TR.md
+

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google ADK × Gemini Live Voicebot Studio | Müşteri Demo Platformu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css?v=2.2" />
+</head>
+<body>
+  <!-- TOP HEADER -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">
+        <span class="sparkle">✦</span>
+      </div>
+      <div>
+        <div class="brand-title">
+          Google ADK × Gemini Live Voicebot Studio
+          <span class="version-pill">Gemini Enterprise Demo</span>
+        </div>
+        <div class="brand-subtitle">
+          Multi-Use-Case Gerçek Zamanlı Sesli &amp; Görsel Ajan Platformu
+        </div>
+      </div>
+    </div>
+
+    <div class="telemetry-strip">
+      <div class="tel-pill">
+        <span class="tel-label">Platform</span>
+        <span class="tel-value mono" id="gcpProjectBadge">Gemini Enterprise</span>
+      </div>
+      <div class="tel-pill">
+        <span class="tel-label">Aktif Mimari</span>
+        <span class="tel-value" id="activeArchBadge">Native Audio Live (Bidi)</span>
+      </div>
+      <div class="tel-pill">
+        <span class="tel-label">Durum</span>
+        <span class="status-dot disconnected" id="connStatusDot"></span>
+        <span class="tel-value" id="connStatusText">Hazır (Bağlantı Bekleniyor)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN 3-COLUMN WORKSPACE -->
+  <main class="studio-grid">
+    <!-- LEFT SIDEBAR: ARCHITECTURE + VOICE + 6 SCENARIOS -->
+    <aside class="panel sidebar-panel">
+      <div class="panel-section">
+        <div class="section-header">
+          <h2>1. Gemini Live Mimari Modu</h2>
+          <span class="hint-tag">Canlı Değiştirilebilir</span>
+        </div>
+        <div class="arch-list" id="archModeList">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-header">
+          <h2>2. Ses Karakteri (Voice Persona)</h2>
+        </div>
+        <select id="voiceSelect" class="studio-select"></select>
+      </div>
+
+      <div class="panel-section scenarios-section">
+        <div class="section-header">
+          <h2>3. Sektörel Use-Case Senaryoları (6 Demo)</h2>
+          <span class="hint-tag">Müşteri Sunumu</span>
+        </div>
+        <div class="scenario-list" id="scenarioList">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER STAGE: REACTIVE ORB + CONTROLS + STREAMING TRANSCRIPT -->
+    <section class="panel center-panel">
+      <!-- SCENARIO BANNER -->
+      <div class="scenario-hero" id="scenarioHero">
+        <div class="hero-top">
+          <div class="hero-title-group">
+            <span class="hero-icon" id="heroIcon">🏦</span>
+            <div>
+              <h1 id="heroTitle">Bankacılık &amp; Finans VIP Concierge</h1>
+              <p id="heroSubtitle">Şüpheli işlemde kart dondurma, özel kredi/mevduat hesaplama &amp; Gemini 3.8 Flash risk analizi</p>
+            </div>
+          </div>
+          <div class="model-tags" id="activeModelPills">
+            <span class="model-chip primary">gemini-3.8-live</span>
+            <span class="model-chip secondary">gemini-3.8-flash</span>
+          </div>
+        </div>
+        <div class="hero-highlights" id="heroHighlights"></div>
+      </div>
+
+      <!-- AUDIO ORB + MULTIMODAL VIDEO STAGE -->
+      <div class="visualizer-stage" id="visualizerStage">
+        <div class="orb-wrapper">
+          <canvas id="audioCanvas" width="560" height="175"></canvas>
+          <div class="orb-state-pill" id="orbStateBadge">OTURUMU BAŞLATIN VEYA DEMO KOMUTU SEÇİN</div>
+        </div>
+
+        <!-- HIDDEN/ACTIVE VIDEO PREVIEW FOR CAMERA & SCREEN SHARE -->
+        <div class="video-preview-box hidden" id="videoPreviewBox">
+          <video id="liveVideo" autoplay playsinline muted></video>
+          <canvas id="frameCaptureCanvas" width="640" height="480" class="hidden"></canvas>
+          <button type="button" class="video-expand-btn" id="btnToggleVideoSize" title="Görüntü alanını büyüt / küçült">
+            ⛶ Büyüt
+          </button>
+          <div class="video-badge" id="videoStreamBadge">🔴 CANLI GÖRÜNTÜ AKTARIMI (1 FPS ➔ Gemini 3.8 Live)</div>
+        </div>
+      </div>
+
+      <!-- CONTROL BAR -->
+      <div class="control-dock">
+        <button id="btnConnect" class="ctrl-btn primary-btn">
+          <span class="btn-icon">⚡</span>
+          <span id="btnConnectLabel">Canlı Oturumu Başlat</span>
+        </button>
+
+        <button id="btnMic" class="ctrl-btn mic-btn" disabled>
+          <span class="btn-icon">🎙️</span>
+          <span id="btnMicLabel">Mikrofonu Aç (Konuş)</span>
+        </button>
+
+        <button id="btnCamera" class="ctrl-btn media-btn" disabled title="Kamera açarak ürün/cihaz gösterin">
+          <span class="btn-icon">📷</span>
+          <span>Kamera Paylaş</span>
+        </button>
+
+        <button id="btnScreen" class="ctrl-btn media-btn" disabled title="Ekranınızı Gemini Live ile paylaşın">
+          <span class="btn-icon">🖥️</span>
+          <span>Ekran Paylaş</span>
+        </button>
+
+        <button id="btnInterrupt" class="ctrl-btn warn-btn" disabled title="Model konuşurken sözünü kesin (Barge-in)">
+          <span class="btn-icon">✋</span>
+          <span>Sözünü Kes (Barge-In)</span>
+        </button>
+      </div>
+
+      <!-- QUICK SAMPLE PROMPTS -->
+      <div class="sample-prompts-bar">
+        <div class="sample-bar-title">
+          <span>💡 Hızlı Demo Senaryo Komutları (Tek Tıkla Sesli Yanıt &amp; ADK Tool Tetikle):</span>
+        </div>
+        <div class="sample-chips" id="sampleChipsContainer"></div>
+      </div>
+
+      <!-- LIVE STREAMING CONVERSATION & TRANSCRIPTION FEED -->
+      <div class="chat-feed" id="chatFeed">
+        <div class="empty-chat-hint">
+          <div class="empty-icon">🎧</div>
+          <h3>Gemini Live Sesli &amp; Görsel Asistan Hazır</h3>
+          <p>
+            Yukarıdan <strong>"Canlı Oturumu Başlat"</strong> butonuna tıklayıp mikrofonunuzla doğrudan konuşabilir,
+            kameranızdan bir nesne gösterebilir veya <strong>Hızlı Demo Komutlarından</strong> birine tıklayarak
+            senaryoyu hemen müşterinize gösterebilirsiniz.
+          </p>
+        </div>
+      </div>
+
+      <!-- TEXT INPUT BAR -->
+      <form id="textForm" class="text-input-bar">
+        <input
+          type="text"
+          id="textInput"
+          placeholder="Mikrofonla konuşun veya buraya mesaj yazıp Enter'a basın..."
+          autocomplete="off"
+        />
+        <button type="submit" class="send-btn">Gönder ➔</button>
+      </form>
+    </section>
+
+    <!-- RIGHT SIDEBAR: LIVE DYNAMIC WIDGETS + GEMINI 3.8 FLASH INSIGHTS + ADK TELEMETRY -->
+    <aside class="panel right-panel">
+      <div class="panel-section widgets-section">
+        <div class="section-header">
+          <h2>⚡ Canlı Müşteri Ekranı &amp; Aksiyon Kartları</h2>
+          <button id="btnExecSummary" class="summary-btn" title="Gemini 3.8 Flash ile çağrı özeti çıkar">
+            ✨ 3.8 Flash Özeti
+          </button>
+        </div>
+        <div class="widgets-canvas" id="widgetsCanvas">
+          <div class="empty-widget-card">
+            <span class="ew-icon">🧩</span>
+            <div>
+              <strong>Canlı ADK Aksiyon Kartları</strong>
+              <p>Asistan konuşma sırasında banka kartı dondurma, kredi hesaplama, kargo/iade onayı, modem sıfırlama veya randevu araçlarını çağırdığında kartlar anlık olarak burada belirir.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section telemetry-section">
+        <div class="section-header">
+          <h2>🔍 ADK Tool &amp; Live Event Telemetrisi</h2>
+          <button id="btnClearLogs" class="clear-btn">Temizle</button>
+        </div>
+        <div class="telemetry-log" id="telemetryLog"></div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="/static/app.js?v=2.4"></script>
+</body>
+</html>
